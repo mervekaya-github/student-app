@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:student_app/screens/login.dart';
+import 'package:student_app/screens/login_screen.dart';
 
 class SignScreen extends StatefulWidget {
+  const SignScreen({super.key});
+
   @override
   _SignScreenState createState() => _SignScreenState();
 }
@@ -21,16 +23,16 @@ class _SignScreenState extends State<SignScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Kayıt Başarılı!'),
-          content: Text('Kayıt işleminiz başarıyla tamamlandı.'),
+          title: const Text('Kayıt Başarılı!'),
+          content: const Text('Kayıt işleminiz başarıyla tamamlandı.'),
           actions: [
             TextButton(
-              child: Text('Tamam'),
+              child: const Text('Tamam'),
               onPressed: () {
                 Navigator.pop(context); // Popup'ı kapat
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => LoginScreen()),
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
                 ); // Login ekranına yönlendirme
               },
             ),
@@ -59,8 +61,8 @@ class _SignScreenState extends State<SignScreen> {
                     color: Colors.lightBlue[800], // Pastel bir metin rengi
                   ),
                 ),
-                SizedBox(height: 16),
-                SizedBox(height: 32),
+                const SizedBox(height: 16),
+                const SizedBox(height: 32),
                 TextField(
                   decoration: InputDecoration(
                     labelText: 'Ad-Soyad',
@@ -73,7 +75,7 @@ class _SignScreenState extends State<SignScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextField(
                   decoration: InputDecoration(
                     labelText: 'Bölüm',
@@ -86,7 +88,7 @@ class _SignScreenState extends State<SignScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextField(
                   decoration: InputDecoration(
                     labelText: 'Sınıf',
@@ -99,7 +101,7 @@ class _SignScreenState extends State<SignScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextField(
                   decoration: InputDecoration(
                     labelText: 'Telefon',
@@ -113,7 +115,7 @@ class _SignScreenState extends State<SignScreen> {
                   ),
                   keyboardType: TextInputType.phone,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextField(
                   decoration: InputDecoration(
                     labelText: 'E-posta',
@@ -128,7 +130,7 @@ class _SignScreenState extends State<SignScreen> {
                   ),
                   keyboardType: TextInputType.emailAddress,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextField(
                   obscureText: _obscureText,
                   decoration: InputDecoration(
@@ -149,22 +151,22 @@ class _SignScreenState extends State<SignScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 32),
+                const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: _register,
-                  child: Text(
-                    'Kayıt Ol',
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.lightBlue[800], // Pastel buton rengi
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25.0),
                     ),
-                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                  ),
+                  child: const Text(
+                    'Kayıt Ol',
+                    style: TextStyle(fontSize: 18, color: Colors.white),
                   ),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 GestureDetector(
                   onTap: () {
                     Navigator.pop(context); // Geri dönmek için

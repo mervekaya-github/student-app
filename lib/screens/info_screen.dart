@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:student_app/screens/chatlist_screen.dart';
+import 'package:student_app/services/chat_service.dart';
+import 'package:student_app/services/firebase_service.dart';
+import 'classmates_screen.dart';
 
 class InfoScreen extends StatelessWidget {
+  const InfoScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.lightBlue[50], // Pastel bir arka plan rengi
       appBar: AppBar(
         backgroundColor: Colors.lightBlue[800], // Uyumlu renk
-        title: Text('Bilgilerim'),
+        title: const Text('Bilgilerim'),
         centerTitle: true,
       ),
       body: Padding(
@@ -17,50 +23,24 @@ class InfoScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               buildTextField('Ad-Soyad', 'Ad-Soyad'),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               buildTextField('Bölüm', 'Bölüm'),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               buildTextField('Sınıf', 'Sınıf'),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               buildTextField('Telefon', 'Telefon', keyboardType: TextInputType.phone),
-              SizedBox(height: 32),
+              const SizedBox(height: 32),
               buildButtonRow(context, 'Sınıf Arkadaşlarım', () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text('Sınıf Arkadaşlarım'),
-                      content: Text('Bu bölüm henüz geliştirilmedi.'),
-                      actions: [
-                        TextButton(
-                          child: Text('Tamam'),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ],
-                    );
-                  },
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ClassmatesScreen()),
                 );
               }),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               buildButtonRow(context, 'Mesajlarım', () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: Text('Mesajlarım'),
-                      content: Text('Bu bölüm henüz geliştirilmedi.'),
-                      actions: [
-                        TextButton(
-                          child: Text('Tamam'),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ],
-                    );
-                  },
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ChatListScreen(chatService: ChatService(FirebaseService()))),
                 );
               }),
             ],
@@ -82,9 +62,9 @@ class InfoScreen extends StatelessWidget {
             color: Colors.lightBlue[800],
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
             color: Colors.lightBlue[100],
             borderRadius: BorderRadius.circular(25.0),
@@ -106,16 +86,16 @@ class InfoScreen extends StatelessWidget {
     return Center(
       child: ElevatedButton(
         onPressed: onPressed,
-        child: Text(
-          text,
-          style: TextStyle(fontSize: 18, color: Colors.white),
-        ),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.lightBlue[800],
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(25.0),
           ),
-          padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+          padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(fontSize: 18, color: Colors.white),
         ),
       ),
     );
