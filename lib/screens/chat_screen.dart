@@ -31,11 +31,17 @@ class ChatScreen extends StatelessWidget {
         children: [
           Expanded(
             child: StreamBuilder<List<Message>>(
-              stream: chatService.getMessages(chat.name),
+              stream: chatService.getMessages(chat.uid),
               builder: (context, snapshot) {
-                if (!snapshot.hasData) return const CircularProgressIndicator();
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No messages yet'));
+                }
                 final messages = snapshot.data!;
                 return ListView.builder(
+                  reverse: true,
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     return MessageBubble(message: messages[index]);
@@ -70,7 +76,7 @@ class ChatScreen extends StatelessWidget {
                     icon: const Icon(Icons.send, color: Colors.white),
                     onPressed: () {
                       final message = Message(content: _controller.text, sentByMe: true);
-                      chatService.sendMessage(chat.name, message);
+                      chatService.sendMessage(chat.uid, message);
                       _controller.clear();
                     },
                   ),

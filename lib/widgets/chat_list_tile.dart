@@ -5,7 +5,7 @@ class ChatListTile extends StatelessWidget {
   final Chat chat;
   final VoidCallback onTap;
 
-  const ChatListTile({super.key, required this.chat, required this.onTap});
+  ChatListTile({required this.chat, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -13,10 +13,26 @@ class ChatListTile extends StatelessWidget {
       leading: CircleAvatar(
         backgroundImage: AssetImage(chat.profilePic),
       ),
-      title: Text(chat.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+      title: Text(chat.name),
       subtitle: Text(chat.message),
-      trailing: Text(chat.time),
+      trailing: Text(
+        _formatTime(chat.time),
+        style: TextStyle(color: Colors.grey, fontSize: 12),
+      ),
       onTap: onTap,
     );
+  }
+
+  String _formatTime(DateTime time) {
+    final now = DateTime.now();
+    final difference = now.difference(time);
+
+    if (difference.inDays > 1) {
+      return '${time.day}/${time.month}/${time.year}';
+    } else if (difference.inDays == 1) {
+      return 'Dün';
+    } else {
+      return '${time.hour}:${time.minute.toString().padLeft(2, '0')}';
+    }
   }
 }

@@ -1,36 +1,93 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:student_app/screens/chat_screen.dart';
+import 'package:student_app/services/chat_service.dart';
+import 'package:student_app/services/firebase_service.dart';
+import '../models/chat.dart';
 
-import '../models/User.dart';
-
-class ClassmatesScreen extends StatelessWidget {
+class ClassmatesScreen extends StatefulWidget {
   const ClassmatesScreen({super.key});
 
   @override
+  _ClassmatesScreenState createState() => _ClassmatesScreenState();
+}
+
+class _ClassmatesScreenState extends State<ClassmatesScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
+  final FirebaseService _firebaseService = FirebaseService();
+  late final ChatService _chatService;
+
+  @override
+  void initState() {
+    super.initState();
+    _chatService = ChatService(_firebaseService);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final List<User> classmates = const [
-      User(name: 'Ahmet Yılmaz', department: 'Bilgisayar Mühendisliği', studentClass: 3, phone: '123-456-7890'),
-      User(name: 'Mehmet Kaya', department: 'Makine Mühendisliği', studentClass: 2, phone: '098-765-4321'),
-      User(name: 'Ayşe Demir', department: 'Elektrik-Elektronik Mühendisliği', studentClass: 1, phone: '567-890-1234'),
-      User(name: 'Fatma Şahin', department: 'İnşaat Mühendisliği', studentClass: 4, phone: '345-678-9012'),
-    ];
+    final User? user = _auth.currentUser;
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.lightBlue[800],
         title: const Text('Sınıf Arkadaşlarım'),
+        centerTitle: true,
       ),
-      body: ListView.builder(
-        itemCount: classmates.length,
-        itemBuilder: (context, index) {
-          final classmate = classmates[index];
-          return ListTile(
-            title: Text(classmate.name),
-            subtitle: Text('${classmate.department} - Sınıf: ${classmate.studentClass}'),
-            trailing: IconButton(
-              icon: const Icon(Icons.message),
-              onPressed: () {
-                // Mesaj gönderme işlemi
-              },
-            ),
+      body: StreamBuilder<DocumentSnapshot>(
+        stream: _db.collection('students').doc(user!.uid).snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return const CircularProgressIndicator();
+          final userData = snapshot.data!.data() as Map<String, dynamic>;
+          final department = userData['department'];
+
+          return StreamBuilder<QuerySnapshot>(
+            stream: _db.collection('students').where('department', isEqualTo: department).snapshots(),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) return const CircularProgressIndicator();
+              final classmates = snapshot.data!.docs;
+
+              return ListView.builder(
+                itemCount: classmates.length,
+                itemBuilder: (context, index) {
+                  final classmate = classmates[index].data() as Map<String, dynamic>;
+                  final classmateName = classmate['name'];
+                  final classmateUid = classmates[index].id;
+
+                  if (classmateUid == user!.uid) return Container(); // Kendini listede gösterme
+
+                  return ListTile(
+                    title: Text(classmateName),
+                    subtitle: Text(classmate['email']),
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.lightBlue[100],
+                      child: Icon(
+                        Icons.person,
+                        color: Colors.lightBlue[800],
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ChatScreen(
+                            chat: Chat(
+                              name: classmateName,
+                              profilePic: 'assets/default_profile.png', // Profil resmi yoksa varsayılan resim
+                              uid: classmateUid,
+                              message: '', // Varsayılan boş mesaj
+                              time: DateTime.now(), // Varsayılan zaman
+                            ),
+                            chatService: _chatService,
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
+            },
           );
         },
       ),

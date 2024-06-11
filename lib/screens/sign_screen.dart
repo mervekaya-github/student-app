@@ -14,7 +14,6 @@ class SignScreen extends StatefulWidget {
 class _SignScreenState extends State<SignScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _departmentController = TextEditingController();
   final _classController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
@@ -22,8 +21,16 @@ class _SignScreenState extends State<SignScreen> {
   bool _obscureText = true;
   bool _isLoading = false;
   String? _errorMessage;
+  String? _selectedDepartment;
 
   late final AuthService _authService;
+
+  final List<String> _departments = [
+    'Tıp',
+    'Diş Hekimliği',
+    'Bilgisayar Mühendisliği',
+    'Makine Mühendisliği'
+  ];
 
   @override
   void initState() {
@@ -43,7 +50,7 @@ class _SignScreenState extends State<SignScreen> {
   }
 
   Future<void> _register() async {
-    if (_formKey.currentState!.validate()) {
+    if (_formKey.currentState!.validate() && _selectedDepartment != null) {
       setState(() {
         _isLoading = true;
         _errorMessage = null;
@@ -58,31 +65,31 @@ class _SignScreenState extends State<SignScreen> {
           await _authService.registerStudent(
             user.uid,
             _nameController.text.trim(),
-            _departmentController.text.trim(),
+            _selectedDepartment!,
             int.parse(_classController.text.trim()),
             _phoneController.text.trim(),
           );
 
           showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
+              context: context,
+              builder: (context) {
+            return AlertDialog(
                 title: const Text('Kayıt Başarılı!'),
                 content: const Text('Kayıt işleminiz başarıyla tamamlandı.'),
                 actions: [
-                  TextButton(
-                    child: const Text('Tamam'),
-                    onPressed: () {
-                      Navigator.pop(context); // Popup'ı kapat
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => const LoginScreen()),
-                      ); // Login ekranına yönlendirme
-                    },
-                  ),
+            TextButton(
+            child: const Text('Tamam'),
+    onPressed: () {
+    Navigator.pop(context); // Popup'ı kap
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    ); // Login ekranına yönlendirme
+    },
+            ),
                 ],
-              );
-            },
+            );
+              },
           );
         }
       } catch (e) {
@@ -96,8 +103,6 @@ class _SignScreenState extends State<SignScreen> {
       }
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -143,11 +148,24 @@ class _SignScreenState extends State<SignScreen> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _departmentController,
+                      DropdownButtonFormField<String>(
+                        value: _selectedDepartment,
+                        hint: Text(
+                          'Bölüm Seçin',
+                          style: TextStyle(color: Colors.lightBlue[800]), // Pastel bir metin rengi
+                        ),
+                        items: _departments.map((String department) {
+                          return DropdownMenuItem<String>(
+                            value: department,
+                            child: Text(department),
+                          );
+                        }).toList(),
+                        onChanged: (newValue) {
+                          setState(() {
+                            _selectedDepartment = newValue;
+                          });
+                        },
                         decoration: InputDecoration(
-                          labelText: 'Bölüm',
-                          labelStyle: TextStyle(color: Colors.lightBlue[800]), // Pastel bir metin rengi
                           filled: true,
                           fillColor: Colors.lightBlue[100], // Pastel bir doldurma rengi
                           border: OutlineInputBorder(
@@ -155,12 +173,7 @@ class _SignScreenState extends State<SignScreen> {
                             borderSide: BorderSide.none,
                           ),
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Lütfen bölümünüzü girin';
-                          }
-                          return null;
-                        },
+                        validator: (value) => value == null ? 'Lütfen bir bölüm seçin' : null,
                       ),
                       const SizedBox(height: 16),
                       TextFormField(
