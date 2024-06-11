@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:student_app/services/auth_service.dart';
+import 'package:student_app/services/firebase_service.dart';
 import 'package:student_app/screens/info_screen.dart';
 import 'package:student_app/screens/sign_screen.dart';
-import 'package:student_app/services/firebase_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,8 +20,18 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
   String? _errorMessage;
 
-  // AuthService örneği
-  final AuthService _authService = AuthService(FirebaseService());
+  late final AuthService _authService;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeServices();
+  }
+
+  Future<void> _initializeServices() async {
+    final firebaseService = FirebaseService();
+    _authService = AuthService(firebaseService);
+  }
 
   void _togglePasswordVisibility() {
     setState(() {
@@ -140,11 +150,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 if (_errorMessage != null)
                   Text(
                     _errorMessage!,
-                    style: const TextStyle(color: Colors.red, fontSize: 16),
+                    style: TextStyle(color: Colors.red, fontSize: 16),
                   ),
                 const SizedBox(height: 16),
                 _isLoading
-                    ? const CircularProgressIndicator()
+                    ? CircularProgressIndicator()
                     : ElevatedButton(
                   onPressed: _login,
                   style: ElevatedButton.styleFrom(
