@@ -94,16 +94,11 @@ class _InfoScreenState extends State<InfoScreen> {
                   buildButtonRow(context, 'Sınıf Arkadaşlarım', () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const ClassmatesScreen()),
+                      MaterialPageRoute(builder: (context) => ClassmatesScreen()),
                     );
                   }),
                   const SizedBox(height: 16),
-                  buildButtonRow(context, 'Mesajlarım', () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ChatListScreen(chatService: ChatService(FirebaseService()))),
-                    );
-                  }),
+
                 ],
               )
                   : Center(child: CircularProgressIndicator()),

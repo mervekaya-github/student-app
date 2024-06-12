@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../models/chat.dart';
 import '../models/message.dart';
@@ -41,7 +42,7 @@ class ChatScreen extends StatelessWidget {
                 }
                 final messages = snapshot.data!;
                 return ListView.builder(
-                  reverse: true,
+                  reverse: true, // Mesajları ters sırada göster
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     return MessageBubble(message: messages[index]);
@@ -75,7 +76,11 @@ class ChatScreen extends StatelessWidget {
                   child: IconButton(
                     icon: const Icon(Icons.send, color: Colors.white),
                     onPressed: () {
-                      final message = Message(content: _controller.text, sentByMe: true);
+                      final message = Message(
+                        content: _controller.text,
+                        sentByMe: true,
+                        senderId: FirebaseAuth.instance.currentUser!.uid,
+                      );
                       chatService.sendMessage(chat.uid, message);
                       _controller.clear();
                     },

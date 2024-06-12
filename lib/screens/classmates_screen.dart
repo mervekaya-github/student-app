@@ -7,8 +7,6 @@ import 'package:student_app/services/firebase_service.dart';
 import '../models/chat.dart';
 
 class ClassmatesScreen extends StatefulWidget {
-  const ClassmatesScreen({super.key});
-
   @override
   _ClassmatesScreenState createState() => _ClassmatesScreenState();
 }
@@ -16,13 +14,12 @@ class ClassmatesScreen extends StatefulWidget {
 class _ClassmatesScreenState extends State<ClassmatesScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _db = FirebaseFirestore.instance;
-  final FirebaseService _firebaseService = FirebaseService();
-  late final ChatService _chatService;
+  late ChatService _chatService;
 
   @override
   void initState() {
     super.initState();
-    _chatService = ChatService(_firebaseService);
+    _chatService = ChatService(FirebaseService());
   }
 
   @override
@@ -55,7 +52,7 @@ class _ClassmatesScreenState extends State<ClassmatesScreen> {
                   final classmateName = classmate['name'];
                   final classmateUid = classmates[index].id;
 
-                  if (classmateUid == user!.uid) return Container(); // Kendini listede gösterme
+                  if (classmateUid == user.uid) return Container(); // Kendini listede gösterme
 
                   return ListTile(
                     title: Text(classmateName),
@@ -67,7 +64,8 @@ class _ClassmatesScreenState extends State<ClassmatesScreen> {
                         color: Colors.lightBlue[800],
                       ),
                     ),
-                    onTap: () {
+                    onTap: () async {
+                      final chatId = await _chatService.createChat(user.uid, classmateUid);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -75,8 +73,8 @@ class _ClassmatesScreenState extends State<ClassmatesScreen> {
                             chat: Chat(
                               name: classmateName,
                               profilePic: 'assets/default_profile.png', // Profil resmi yoksa varsayılan resim
-                              uid: classmateUid,
-                              message: '', // Varsayılan boş mesaj
+                              uid: chatId,
+                              message: '', // Varsayılan veya boş bir mesaj
                               time: DateTime.now(), // Varsayılan zaman
                             ),
                             chatService: _chatService,
